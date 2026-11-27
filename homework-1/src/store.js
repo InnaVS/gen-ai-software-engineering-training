@@ -73,10 +73,50 @@ function getBalance(accountId) {
   return balance;
 }
 
+/**
+ * Account summary: total deposits, total withdrawals, transaction count,
+ * and most recent transaction date (Task 4 Option A).
+ */
+function getSummary(accountId) {
+  const related = filter({ accountId });
+
+  let totalDeposits = 0;
+  let totalWithdrawals = 0;
+  let mostRecentTransactionDate = null;
+
+  for (const t of related) {
+    if (t.type === 'deposit' && t.toAccount === accountId) {
+      totalDeposits += t.amount;
+    } else if (t.type === 'withdrawal' && t.fromAccount === accountId) {
+      totalWithdrawals += t.amount;
+    } else if (t.type === 'transfer') {
+      // Incoming transfer counts as deposit-like credit; outgoing as withdrawal-like debit
+      if (t.toAccount === accountId) totalDeposits += t.amount;
+      if (t.fromAccount === accountId) totalWithdrawals += t.amount;
+    }
+
+    if (
+      !mostRecentTransactionDate ||
+      new Date(t.timestamp) > new Date(mostRecentTransactionDate)
+    ) {
+      mostRecentTransactionDate = t.timestamp;
+    }
+  }
+
+  return {
+    accountId,
+    totalDeposits,
+    totalWithdrawals,
+    numberOfTransactions: related.length,
+    mostRecentTransactionDate,
+  };
+}
+
 module.exports = {
   getAll,
   getById,
   filter,
   add,
   getBalance,
+  getSummary,
 };
