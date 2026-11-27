@@ -9,6 +9,42 @@ function getById(id) {
   return transactions.find((t) => t.id === id) || null;
 }
 
+/**
+ * Filter transactions by optional accountId, type, and date range (from/to).
+ * Account match: fromAccount or toAccount equals accountId.
+ * Dates compare against transaction.timestamp (ISO 8601).
+ */
+function filter({ accountId, type, from, to } = {}) {
+  return transactions.filter((t) => {
+    if (accountId) {
+      const matchesAccount =
+        t.fromAccount === accountId || t.toAccount === accountId;
+      if (!matchesAccount) return false;
+    }
+
+    if (type && t.type !== type) return false;
+
+    if (from) {
+      const fromTime = new Date(from).getTime();
+      if (Number.isNaN(fromTime) || new Date(t.timestamp).getTime() < fromTime) {
+        return false;
+      }
+    }
+
+    if (to) {
+      const toDate = new Date(to);
+      if (Number.isNaN(toDate.getTime())) return false;
+      // Inclusive end-of-day when only a date (YYYY-MM-DD) is provided
+      if (/^\d{4}-\d{2}-\d{2}$/.test(to)) {
+        toDate.setUTCHours(23, 59, 59, 999);
+      }
+      if (new Date(t.timestamp).getTime() > toDate.getTime()) return false;
+    }
+
+    return true;
+  });
+}
+
 function add(transaction) {
   transactions.push(transaction);
   return transaction;
@@ -40,6 +76,7 @@ function getBalance(accountId) {
 module.exports = {
   getAll,
   getById,
+  filter,
   add,
   getBalance,
 };
