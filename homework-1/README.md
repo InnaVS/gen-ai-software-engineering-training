@@ -130,9 +130,10 @@ Screenshots of the workflow and live API responses are in [`docs/screenshots/`](
 | File | What it shows |
 |------|----------------|
 | `ai-prompt-1.png` | Cursor Agent: Task 1 prompt and the start of the generated code |
+| `ai-prompt-2.png` | Claude Code: prompt asking to create the pull request |
 | `api-running.png` | `GET /health` → `200` from the running server |
 | `api-requests.png` | Creating transactions, then balance and summary grouped by currency |
-| `api-validation-filter.png` | `400` for a boolean amount and for malformed JSON |
+| `api-validation-filter.png` | `400` for a boolean amount and for malformed JSON, then a filtered list (`200`) |
 
 ---
 
