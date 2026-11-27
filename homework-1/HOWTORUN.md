@@ -99,5 +99,8 @@ No `.env` file is required. Data is **in-memory** and resets when the process st
 3. Confirm:
    - Valid `POST` → `201`
    - Invalid amount / account / currency → `400` with `details`
+   - Boolean amount → `400` with `Amount must be a number, not a boolean`
+   - Malformed JSON → `400`
+   - Balance and summary are grouped by currency and ignore `pending` / `failed` transactions
    - Unknown transaction id → `404`
    - Filters and summary return expected subsets / totals

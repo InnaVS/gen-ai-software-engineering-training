@@ -49,6 +49,8 @@ function validateTransaction(body) {
   // Amount: positive, max 2 decimal places
   if (body.amount === undefined || body.amount === null || body.amount === '') {
     errors.push({ field: 'amount', message: 'Amount is required' });
+  } else if (typeof body.amount === 'boolean') {
+    errors.push({ field: 'amount', message: 'Amount must be a number, not a boolean' });
   } else {
     const amount = Number(body.amount);
     if (Number.isNaN(amount) || amount <= 0) {

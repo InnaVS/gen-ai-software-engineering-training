@@ -50,49 +50,58 @@ function add(transaction) {
   return transaction;
 }
 
-/**
- * Balance for an account: deposits/incoming transfers credit,
- * withdrawals/outgoing transfers debit. Only completed transactions count.
- */
-function getBalance(accountId) {
-  let balance = 0;
+/** Add an amount to the running total of its currency. */
+function addToCurrency(totals, currency, amount) {
+  totals[currency] = (totals[currency] || 0) + amount;
+}
 
-  for (const t of transactions) {
-    if (t.status !== 'completed') continue;
-
-    if (t.type === 'deposit' && t.toAccount === accountId) {
-      balance += t.amount;
-    } else if (t.type === 'withdrawal' && t.fromAccount === accountId) {
-      balance -= t.amount;
-    } else if (t.type === 'transfer') {
-      if (t.toAccount === accountId) balance += t.amount;
-      if (t.fromAccount === accountId) balance -= t.amount;
-    }
-  }
-
-  return balance;
+/** Completed transactions involving an account. Pending and failed ones never count. */
+function getCompleted(accountId) {
+  return filter({ accountId }).filter((t) => t.status === 'completed');
 }
 
 /**
- * Account summary: total deposits, total withdrawals, transaction count,
- * and most recent transaction date (Task 4 Option A).
+ * Balances for an account, grouped by currency (no conversion between them):
+ * deposits/incoming transfers credit, withdrawals/outgoing transfers debit.
+ */
+function getBalance(accountId) {
+  const balances = {};
+
+  for (const t of getCompleted(accountId)) {
+    if (t.type === 'deposit' && t.toAccount === accountId) {
+      addToCurrency(balances, t.currency, t.amount);
+    } else if (t.type === 'withdrawal' && t.fromAccount === accountId) {
+      addToCurrency(balances, t.currency, -t.amount);
+    } else if (t.type === 'transfer') {
+      if (t.toAccount === accountId) addToCurrency(balances, t.currency, t.amount);
+      if (t.fromAccount === accountId) addToCurrency(balances, t.currency, -t.amount);
+    }
+  }
+
+  return balances;
+}
+
+/**
+ * Account summary: total deposits and withdrawals grouped by currency,
+ * transaction count, and most recent transaction date (Task 4 Option A).
+ * Only completed transactions are included, matching getBalance.
  */
 function getSummary(accountId) {
-  const related = filter({ accountId });
+  const related = getCompleted(accountId);
 
-  let totalDeposits = 0;
-  let totalWithdrawals = 0;
+  const totalDeposits = {};
+  const totalWithdrawals = {};
   let mostRecentTransactionDate = null;
 
   for (const t of related) {
     if (t.type === 'deposit' && t.toAccount === accountId) {
-      totalDeposits += t.amount;
+      addToCurrency(totalDeposits, t.currency, t.amount);
     } else if (t.type === 'withdrawal' && t.fromAccount === accountId) {
-      totalWithdrawals += t.amount;
+      addToCurrency(totalWithdrawals, t.currency, t.amount);
     } else if (t.type === 'transfer') {
       // Incoming transfer counts as deposit-like credit; outgoing as withdrawal-like debit
-      if (t.toAccount === accountId) totalDeposits += t.amount;
-      if (t.fromAccount === accountId) totalWithdrawals += t.amount;
+      if (t.toAccount === accountId) addToCurrency(totalDeposits, t.currency, t.amount);
+      if (t.fromAccount === accountId) addToCurrency(totalWithdrawals, t.currency, t.amount);
     }
 
     if (

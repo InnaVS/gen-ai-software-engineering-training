@@ -47,6 +47,23 @@ Content-Type: application/json
   "type": "transfer"
 }
 
+### Validation error (boolean amount)
+POST http://localhost:3000/transactions
+Content-Type: application/json
+
+{
+  "toAccount": "ACC-12345",
+  "amount": true,
+  "currency": "USD",
+  "type": "deposit"
+}
+
+### Malformed JSON (400)
+POST http://localhost:3000/transactions
+Content-Type: application/json
+
+{bad json
+
 ### List all transactions
 GET http://localhost:3000/transactions
 

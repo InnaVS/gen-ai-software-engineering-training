@@ -3,7 +3,7 @@ const store = require('../store');
 
 const router = express.Router();
 
-/** GET /accounts/:accountId/balance — get account balance */
+/** GET /accounts/:accountId/balance — get account balances by currency */
 router.get('/:accountId/balance', (req, res) => {
   const { accountId } = req.params;
 
@@ -11,12 +11,9 @@ router.get('/:accountId/balance', (req, res) => {
     return res.status(400).json({ error: 'Account ID is required' });
   }
 
-  const balance = store.getBalance(accountId);
-
   return res.status(200).json({
     accountId,
-    balance,
-    currency: 'USD',
+    balances: store.getBalance(accountId),
   });
 });
 

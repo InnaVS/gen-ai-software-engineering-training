@@ -29,6 +29,18 @@ curl -s -X POST "$BASE/transactions" \
   | python3 -m json.tool
 
 echo
+echo "== Boolean amount (400) =="
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST "$BASE/transactions" \
+  -H "Content-Type: application/json" \
+  -d '{"toAccount":"ACC-12345","amount":true,"currency":"USD","type":"deposit"}'
+
+echo
+echo "== Malformed JSON (400) =="
+curl -s -w '\n[HTTP %{http_code}]\n' -X POST "$BASE/transactions" \
+  -H "Content-Type: application/json" \
+  -d '{bad json'
+
+echo
 echo "== List all =="
 curl -s "$BASE/transactions" | python3 -m json.tool
 

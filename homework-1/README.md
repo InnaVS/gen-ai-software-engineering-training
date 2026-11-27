@@ -2,7 +2,7 @@
 
 > **Student Name**: InnaVS  
 > **Date Submitted**: 2026-11-27  
-> **AI Tools Used**: Cursor (Composer / Agent)
+> **AI Tools Used**: Cursor (Composer / Agent), Claude Code
 
 ---
 
@@ -52,8 +52,8 @@ homework-1/
 | `POST` | `/transactions` | Create a transaction |
 | `GET` | `/transactions` | List / filter transactions |
 | `GET` | `/transactions/:id` | Get one transaction |
-| `GET` | `/accounts/:accountId/balance` | Current balance |
-| `GET` | `/accounts/:accountId/summary` | Deposits, withdrawals, count, latest date |
+| `GET` | `/accounts/:accountId/balance` | Current balances by currency |
+| `GET` | `/accounts/:accountId/summary` | Deposits and withdrawals by currency, count, latest date |
 | `GET` | `/health` | Liveness check |
 
 ### Transaction model
@@ -71,6 +71,31 @@ homework-1/
 }
 ```
 
+### Balance and summary
+
+Totals are grouped by currency; amounts in different currencies are never added together (no conversion). Only `completed` transactions are included, so `pending` and `failed` ones affect neither totals, the transaction count, nor the latest date. An account with no completed transactions returns empty objects.
+
+`GET /accounts/ACC-12345/balance`
+
+```json
+{
+  "accountId": "ACC-12345",
+  "balances": { "USD": 399.5, "EUR": -25 }
+}
+```
+
+`GET /accounts/ACC-12345/summary`
+
+```json
+{
+  "accountId": "ACC-12345",
+  "totalDeposits": { "USD": 500 },
+  "totalWithdrawals": { "USD": 100.5, "EUR": 25 },
+  "numberOfTransactions": 3,
+  "mostRecentTransactionDate": "2026-11-27T15:00:00.000Z"
+}
+```
+
 ### Validation error shape
 
 ```json
@@ -83,6 +108,8 @@ homework-1/
 }
 ```
 
+Malformed JSON returns `400` with `{ "error": "Malformed JSON in request body" }`. A boolean `amount` returns a validation error: `Amount must be a number, not a boolean`.
+
 ---
 
 ## 🤖 How AI Was Used
@@ -94,6 +121,7 @@ Development was done **task-by-task** in Cursor Agent (this chat), not as a sing
 3. **Task 3** — Query filters on `GET /transactions` with combined filters and bad-query `400`s  
 4. **Task 4** — Account summary endpoint (Option A)  
 5. **Docs / demos / screenshots** — README, HOWTORUN, `demo/` scripts, evidence images  
+6. **Bug fixes (Claude Code)** — Claude Code found, fixed and tested three issues: mixed currencies in totals, `pending` / `failed` transactions in the summary, and wrong handling of malformed JSON and boolean amounts  
 
 **What I verified myself:** smoke-tested each task with `curl` (status codes, balances, filters, validation details) before moving on. AI-generated code was reviewed and adjusted (e.g. inclusive end dates, transfer credits/debits in summary).
 
@@ -101,10 +129,10 @@ Screenshots of the workflow and live API responses are in [`docs/screenshots/`](
 
 | File | What it shows |
 |------|----------------|
-| `ai-prompt-1.png` / `ai-prompt-2.png` | Cursor Agent prompts used for Tasks 1–5 |
-| `api-running.png` | Server up + `GET /health` → `200` |
-| `api-requests.png` | Sample create / balance / summary responses |
-| `api-validation-filter.png` | Validation `400` + filtered list |
+| `ai-prompt-1.png` | Cursor Agent: Task 1 prompt and the start of the generated code |
+| `api-running.png` | `GET /health` → `200` from the running server |
+| `api-requests.png` | Creating transactions, then balance and summary grouped by currency |
+| `api-validation-filter.png` | `400` for a boolean amount and for malformed JSON |
 
 ---
 
