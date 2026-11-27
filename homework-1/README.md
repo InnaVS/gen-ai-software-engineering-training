@@ -1,7 +1,7 @@
 # 🏦 Homework 1: Banking Transactions API
 
-> **Student Name**: InnaVS  
-> **Date Submitted**: 2026-11-27  
+> **Student Name**: Inna Sokolenko
+> **Date Submitted**: 2026-11-27
 > **AI Tools Used**: Cursor (Composer / Agent), Claude Code
 
 ---
@@ -116,12 +116,12 @@ Malformed JSON returns `400` with `{ "error": "Malformed JSON in request body" }
 
 Development was done **task-by-task** in Cursor Agent (this chat), not as a single “generate the whole app” prompt.
 
-1. **Task 1** — Scaffold Express app, in-memory store, four core endpoints, basic positive-amount checks  
-2. **Task 2** — Extract `transactionValidator.js` (2 decimal places, `ACC-XXXXX`, ISO currencies)  
-3. **Task 3** — Query filters on `GET /transactions` with combined filters and bad-query `400`s  
-4. **Task 4** — Account summary endpoint (Option A)  
-5. **Docs / demos / screenshots** — README, HOWTORUN, `demo/` scripts, evidence images  
-6. **Bug fixes (Claude Code)** — Claude Code found, fixed and tested three issues: mixed currencies in totals, `pending` / `failed` transactions in the summary, and wrong handling of malformed JSON and boolean amounts  
+1. **Task 1** — Scaffold Express app, in-memory store, four core endpoints, basic positive-amount checks
+2. **Task 2** — Extract `transactionValidator.js` (2 decimal places, `ACC-XXXXX`, ISO currencies)
+3. **Task 3** — Query filters on `GET /transactions` with combined filters and bad-query `400`s
+4. **Task 4** — Account summary endpoint (Option A)
+5. **Docs / demos / screenshots** — README, HOWTORUN, `demo/` scripts, evidence images
+6. **Bug fixes (Claude Code)** — Claude Code found, fixed and tested three issues: mixed currencies in totals, `pending` / `failed` transactions in the summary, and wrong handling of malformed JSON and boolean amounts
 
 **What I verified myself:** smoke-tested each task with `curl` (status codes, balances, filters, validation details) before moving on. AI-generated code was reviewed and adjusted (e.g. inclusive end dates, transfer credits/debits in summary).
 
